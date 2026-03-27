@@ -1,0 +1,35 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create test env file
+        run: |
+          cat > .env.test << 'EOF'
+          DB_URI=postgresql+psycopg2://db_test_username:db_test_password@db_test:5432/db_test
+          REDIS_HOST=redis_test
+          REDIS_PORT=6379
+          ABSOLUTE_ROOT_PATH=${{ github.workspace }}
+          EOF
+
+      - name: Build and run tests
+        run: |
+          docker compose -f docker-compose.test.yml --env-file .env.test run --rm test_runner \
+            bash -c "pip install -q exceptiongroup tomli && pytest -v \
+              'tests/api/api_v2/endpoints/test_rewards_v2.py::test_get_rocket_pool_reward_share_withdrawal[Partial withdrawal before bond reduction, initial fee & bond should be used]' \
+              'tests/api/api_v2/endpoints/test_rewards_v2.py::test_get_rocket_pool_reward_share_withdrawal[Partial withdrawal after 1st bond reduction, LEB8]' \
+              'tests/api/api_v2/endpoints/test_rewards_v2.py::test_get_rocket_pool_reward_share_withdrawal[Partial withdrawal after 2nd bond reduction, LEB4]'"
+
+      # Note: TestClient-based tests (test_rewards, test_rewards_rocket_pool,
+      # test_latest_block_rewards) are skipped due to pre-existing httpx/starlette
+      # version incompatibility (httpx 0.28.1 removed 'app' param that
+      # starlette 0.26.1 TestClient requires). See upstream requirements.txt.
