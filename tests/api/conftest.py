@@ -105,6 +105,17 @@ def _populated_db():
                 validator_index=123,
                 amount_gwei=10_466_575,
             ),
+            # Rocket Pool minipool partial withdrawals (for testing NO share)
+            Withdrawal(
+                slot=6_213_000,  # Apr-13-2023 10:00:23 UTC (before LEB16->LEB8 bond reduction)
+                validator_index=461308,
+                amount_gwei=15_000_000,
+            ),
+            Withdrawal(
+                slot=6_220_000,  # Apr-14-2023 09:20:23 UTC
+                validator_index=584908,
+                amount_gwei=12_000_000,
+            ),
             BlockReward(
                 slot=6_226_574,  # Apr-15-2023 07:15:11 UTC
                 proposer_index=123,

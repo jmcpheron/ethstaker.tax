@@ -169,9 +169,20 @@ def test_rewards_rocket_pool():
         assert len(data["validator_rewards_list"]) == 2
         assert len(data["rocket_pool_node_rewards"]) == 1
 
-        # TODO add some withdrawals to conftest and check returned "NO share" values here
         minipool_16eth_bond_reduced_rewards = data["validator_rewards_list"][0]
         minipool_leb8_rewards = data["validator_rewards_list"][1]
+
+        # Validator 461308 (LEB16, before bond reduction): partial withdrawal of 15M gwei
+        # NO share = 1e9 * 15_000_000 * (16/32 + (16/32) * 0.15) = 8_625_000_000_000_000
+        assert minipool_16eth_bond_reduced_rewards["withdrawals"] == [
+            {"date": "2023-04-13", "amount_wei": 8_625_000_000_000_000},
+        ]
+
+        # Validator 584908 (LEB8 from start): partial withdrawal of 12M gwei
+        # NO share = 1e9 * 12_000_000 * (8/32 + (24/32) * 0.14) = 4_260_000_000_000_000
+        assert minipool_leb8_rewards["withdrawals"] == [
+            {"date": "2023-04-14", "amount_wei": 4_260_000_000_000_000},
+        ]
 
         rocket_pool_node_rewards_datapoint = data["rocket_pool_node_rewards"][0]
         assert rocket_pool_node_rewards_datapoint["date"] == "2023-04-13"

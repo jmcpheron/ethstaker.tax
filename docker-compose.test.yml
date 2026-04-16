@@ -10,6 +10,19 @@ services:
     command: [
         "pytest",
     ]
+    environment:
+      DB_URI:
+      REDIS_HOST: ${REDIS_HOST:-redis_test}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      BEACON_NODE_HOST: ${BEACON_NODE_HOST:-localhost}
+      BEACON_NODE_PORT: ${BEACON_NODE_PORT:-5052}
+      BEACON_NODE_RESPONSE_TIMEOUT: ${BEACON_NODE_RESPONSE_TIMEOUT:-30}
+      EXECUTION_NODE_HOST: ${EXECUTION_NODE_HOST:-localhost}
+      EXECUTION_NODE_PORT: ${EXECUTION_NODE_PORT:-8545}
+      EXECUTION_NODE_RESPONSE_TIMEOUT: ${EXECUTION_NODE_RESPONSE_TIMEOUT:-10}
+      EXECUTION_NODE_INFURA_ARCHIVE_URL: ${EXECUTION_NODE_INFURA_ARCHIVE_URL:-}
+    volumes:
+      - ./tests:/app/tests
     depends_on:
       - db_test
       - redis_test
